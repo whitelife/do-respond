@@ -76,11 +76,11 @@ doRespond.text(200, { hello: 'world' }, (err) => {
 - done: function (optional)
 
 ```javascript
-doRespond.text(200, {
+doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body)
 }, { hello: 'world' });
-doRespond.text(200, {
+doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(body)
 }, { hello: 'world' }, (err) => {
