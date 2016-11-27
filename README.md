@@ -55,15 +55,28 @@ doRespond.text(200, 'hello world', (err) => {
 });
 ```
 
-## json(code, body, done)
+## xml(code, body, done)
 
 - code: http status code
-- body: http body (json)
+- body: http body (object)
 - done: function (optional)
 
 ```javascript
-doRespond.text(200, { hello: 'world' });
-doRespond.text(200, { hello: 'world' }, (err) => {
+doRespond.xml(200, { hello: 'world' });
+doRespond.xml(200, { hello: 'world' }, (err) => {
+    // res finished.
+});
+```
+
+## json(code, body, done)
+
+- code: http status code
+- body: http body (object)
+- done: function (optional)
+
+```javascript
+doRespond.json(200, { hello: 'world' });
+doRespond.json(200, { hello: 'world' }, (err) => {
     // res finished.
 });
 ```
@@ -78,12 +91,12 @@ doRespond.text(200, { hello: 'world' }, (err) => {
 ```javascript
 doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(body)
-}, { hello: 'world' });
+    'Content-Length': Buffer.byteLength(JSON.stringify{ hello: 'world' })
+}, JSON.stringify{ hello: 'world' });
 doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(body)
-}, { hello: 'world' }, (err) => {
+    'Content-Length': Buffer.byteLength(JSON.stringify{ hello: 'world' })
+}, JSON.stringify({ hello: 'world' }), (err) => {
     // res finished.
 });
 ```
