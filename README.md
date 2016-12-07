@@ -83,7 +83,7 @@ doRespond.json(200, { hello: 'world' }, (err) => {
 });
 ```
 
-## textjson(code, body, done)
+## textJson(code, body, done)
 
 response content-type: text/html
 
@@ -92,8 +92,8 @@ response content-type: text/html
 - done: function (optional)
 
 ```javascript
-doRespond.textjson(200, { hello: 'world' });
-doRespond.textjson(200, { hello: 'world' }, (err) => {
+doRespond.textJson(200, { hello: 'world' });
+doRespond.textJson(200, { hello: 'world' }, (err) => {
     // res finished.
 });
 ```
