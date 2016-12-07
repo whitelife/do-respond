@@ -70,6 +70,8 @@ doRespond.xml(200, { hello: 'world' }, (err) => {
 
 ## json(code, body, done)
 
+response content-type: application/json
+
 - code: http status code
 - body: http body (object)
 - done: function (optional)
@@ -77,6 +79,21 @@ doRespond.xml(200, { hello: 'world' }, (err) => {
 ```javascript
 doRespond.json(200, { hello: 'world' });
 doRespond.json(200, { hello: 'world' }, (err) => {
+    // res finished.
+});
+```
+
+## textjson(code, body, done)
+
+response content-type: text/html
+
+- code: http status code
+- body: http body (object)
+- done: function (optional)
+
+```javascript
+doRespond.textjson(200, { hello: 'world' });
+doRespond.textjson(200, { hello: 'world' }, (err) => {
     // res finished.
 });
 ```
