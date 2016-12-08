@@ -1,2 +1,2 @@
 
-module.exports = require('./lib/doRespond');
+module.exports = require('./lib/DoRespond');
