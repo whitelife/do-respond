@@ -1,6 +1,6 @@
 {
   "name": "do-respond",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "do respond",
   "main": "index.js",
   "scripts": {
