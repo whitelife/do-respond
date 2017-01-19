@@ -108,11 +108,11 @@ doRespond.textJson(200, { hello: 'world' }, (err) => {
 ```javascript
 doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(JSON.stringify{ hello: 'world' })
-}, JSON.stringify{ hello: 'world' });
+    'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' })
+}, JSON.stringify({ hello: 'world' }));
 doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(JSON.stringify{ hello: 'world' })
+    'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' })
 }, JSON.stringify({ hello: 'world' }), (err) => {
     // res finished.
 });
