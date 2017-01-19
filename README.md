@@ -9,7 +9,7 @@ do respond library
 npm install do-respond
 ```
 
-## Sample Code
+## Quick Start
 
 ```javascript
 const debug = require('debug')('test');
@@ -19,13 +19,33 @@ const DoRespond = require('do-respond');
 http.createServer((req, res) => {
 
     const doRespond = new DoRespond(req, res, debug);
-    doRespond.json(200, { hello: 'world'});
+    doRespond.json(200, { hello: 'world' });
+}).listen(8080);
+```
 
-    // test statusCode: 200, statusMessage: OK +0ms
-    // test header key: Content-Type, value: application/json; charset=utf-8 +3ms
-    // test header key: Content-Length, value: 17 +3ms
-    // test respond completed. +5ms
+## Callback Error Handling
 
+If you do not bind the domain, the process will die.
+
+```javascript
+const debug = require('debug')('test');
+const domain = require('domain');
+const http = require('http');
+const DoRespond = require('do-respond');
+
+http.createServer((req, res) => {
+
+    const protect = domain.create();
+
+    protect.on('error', (err) => {
+        // error prossing...
+    });
+
+    const doRespond = new DoRespond(req, res, debug);
+    doRespond.json(200, { hello: 'world' }, protect.bind((err) => {
+        // protect error event emit
+        throw new Error('test error');
+    }));
 }).listen(8080);
 ```
 
