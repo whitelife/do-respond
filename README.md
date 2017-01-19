@@ -25,7 +25,7 @@ http.createServer((req, res) => {
 
 ## Callback Error Handling
 
-If you do not bind the domain, the process will die.
+If you do not `domain.bind(callback)`, the process will die.
 
 ```javascript
 const debug = require('debug')('test');
