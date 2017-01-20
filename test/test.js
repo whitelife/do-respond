@@ -29,6 +29,10 @@ describe('DoRespond Testing', () => {
 
                 const doRespond = new DoRespond(req, res, debug);
                 const beheviors = {
+                    '/testdebug': () => {
+                        const _doRespond = new DoRespond(req, res);
+                        _doRespond.text(200, 'hello world');
+                    },
                     '/text': () => {
                         doRespond.text(200, 'hello world');
                     },
@@ -74,7 +78,27 @@ describe('DoRespond Testing', () => {
                         }, JSON.stringify({ hello: 'world' }), (err) => {
 
                         });
-                    }
+                    },
+                    '/overlapped': () => {
+                        doRespond.json(200, { hello: 'world' }, (err) => {
+                            doRespond.json(200, { hello: 'world' });
+                        });
+                    },
+                    '/overlappeddone': () => {
+                        doRespond.json(200, { hello: 'world' }, (err) => {
+                            doRespond.json(200, { hello: 'world' }, (_err) => {
+
+                            });
+                        });
+                    },
+                    '/headerssent': () => {
+                        res.writeHead(200, { 'Content-Type': 'text/plain',
+                          'Trailer': 'Content-MD5' });
+
+                        doRespond.json(200, { hello: 'world' }, (err) => {
+
+                        });
+                    },
                 }
 
                 beheviors[req.url](req, res);
@@ -84,6 +108,21 @@ describe('DoRespond Testing', () => {
             debug('server listen');
             done();
         });
+    });
+
+    it('#constructor(req, res, log, options)', (done) => {
+        request
+            .get('http://localhost:30000/testdebug')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('hello world');
+                done();
+            });
     });
 
     it('#text(code, body)', (done) => {
@@ -192,6 +231,51 @@ describe('DoRespond Testing', () => {
 
                 res.should.have.property('statusCode', 200);
                 res.text.should.deepEqual('{"hello":"world"}');
+                done();
+            });
+    });
+
+    it('#json(code, body, done):overlapped', (done) => {
+        request
+            .get('http://localhost:30000/overlapped')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('{"hello":"world"}');
+                done();
+            });
+    });
+
+    it('#json(code, body, done):overlappeddone', (done) => {
+        request
+            .get('http://localhost:30000/overlappeddone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('{"hello":"world"}');
+                done();
+            });
+    });
+
+    it('#json(code, body, done):headerssent', (done) => {
+        request
+            .get('http://localhost:30000/headerssent')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('');
                 done();
             });
     });

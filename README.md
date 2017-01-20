@@ -9,6 +9,17 @@ do respond library
 npm install do-respond
 ```
 
+## Test Coverage
+
+```
+=============================== Coverage summary ===============================
+Statements   : 85.71% ( 54/63 )
+Branches     : 77.78% ( 14/18 )
+Functions    : 100% ( 6/6 )
+Lines        : 85.71% ( 54/63 )
+================================================================================
+```
+
 ## Quick Start
 
 ```javascript
