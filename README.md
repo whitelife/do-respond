@@ -38,24 +38,23 @@ http.createServer((req, res) => {
 
 ## Callback Error Handling
 
-If you do not `domain.bind(callback)`, the process will die.
+- Domain: https://nodejs.org/dist/latest-v6.x/docs/api/domain.html
+
+If you want to nest Domain objects as children of a parent Domain, then you must explicitly add them.
+Do not `domain.bind(callback)`, the process will die.
 
 ```javascript
+
 'use strict';
 
 const debug = require('debug')('test');
 const domain = require('domain');
 const http = require('http');
-const DoRespond = require('do-respond');
+const DoRespond = require('../lib/DoRespond');
 
 http.createServer((req, res) => {
 
-    const protect = domain.create();
-
-    protect.add(req);
-    protect.add(res);
-
-    protect.on('error', (err) => {
+    const lastError = (err) => {
         try {
             // error prossing...
             res.writeHead(500);
@@ -64,12 +63,32 @@ http.createServer((req, res) => {
             // error alert to process exit
             debug(`protect catch err: ${e.message}`);
         }
+    }
+
+    // Domain
+    // https://nodejs.org/dist/latest-v6.x/docs/api/domain.html#domain_implicit_binding
+
+    // Implicit Binding Domain
+    const protect = domain.create();
+
+    protect.add(req);
+    protect.add(res);
+
+    protect.on('error', (err) => {
+        lastError(err);
+    });
+
+    const callbackProtect = domain.create();
+
+    callbackProtect.on('error', (err) => {
+        lastError(err);
     });
 
     protect.run(() => {
         const doRespond = new DoRespond(req, res, debug);
 
-        doRespond.json(200, { hello: 'world' }, protect.bind((err) => {
+        // Explicit Binding Domain
+        doRespond.json(200, { hello: 'world' }, callbackProtect.bind((err) => {
             // protect error event emit
 
         }));
