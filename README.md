@@ -13,16 +13,18 @@ npm install do-respond
 
 ```
 =============================== Coverage summary ===============================
-Statements   : 85.71% ( 54/63 )
-Branches     : 77.78% ( 14/18 )
+Statements   : 75.64% ( 59/78 )
+Branches     : 53.85% ( 14/26 )
 Functions    : 100% ( 6/6 )
-Lines        : 85.71% ( 54/63 )
+Lines        : 75.64% ( 59/78 )
 ================================================================================
 ```
 
 ## Quick Start
 
 ```javascript
+'use strict';
+
 const debug = require('debug')('test');
 const http = require('http');
 const DoRespond = require('do-respond');
@@ -39,6 +41,8 @@ http.createServer((req, res) => {
 If you do not `domain.bind(callback)`, the process will die.
 
 ```javascript
+'use strict';
+
 const debug = require('debug')('test');
 const domain = require('domain');
 const http = require('http');
@@ -48,15 +52,28 @@ http.createServer((req, res) => {
 
     const protect = domain.create();
 
+    protect.add(req);
+    protect.add(res);
+
     protect.on('error', (err) => {
-        // error prossing...
+        try {
+            // error prossing...
+            res.writeHead(500);
+            res.end(`err: ${err.message}`);
+        } catch (e) {
+            // error alert to process exit
+            debug(`protect catch err: ${e.message}`);
+        }
     });
 
-    const doRespond = new DoRespond(req, res, debug);
-    doRespond.json(200, { hello: 'world' }, protect.bind((err) => {
-        // protect error event emit
-        throw new Error('test error');
-    }));
+    protect.run(() => {
+        const doRespond = new DoRespond(req, res, debug);
+
+        doRespond.json(200, { hello: 'world' }, protect.bind((err) => {
+            // protect error event emit
+
+        }));
+    });
 }).listen(8080);
 ```
 
