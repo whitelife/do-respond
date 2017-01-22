@@ -13,10 +13,10 @@ npm install do-respond
 
 ```
 =============================== Coverage summary ===============================
-Statements   : 75.64% ( 59/78 )
+Statements   : 73.17% ( 60/82 )
 Branches     : 53.85% ( 14/26 )
-Functions    : 100% ( 6/6 )
-Lines        : 75.64% ( 59/78 )
+Functions    : 100% ( 7/7 )
+Lines        : 73.17% ( 60/82 )
 ================================================================================
 ```
 
@@ -36,21 +36,17 @@ http.createServer((req, res) => {
 }).listen(8080);
 ```
 
-## Callback Error Handling
+## Error Handling
 
 - Domain: https://nodejs.org/dist/latest-v6.x/docs/api/domain.html
 
-If you want to nest Domain objects as children of a parent Domain, then you must explicitly add them.
-Do not `domain.bind(callback)`, the process will die.
-
 ```javascript
-
 'use strict';
 
 const debug = require('debug')('test');
 const domain = require('domain');
 const http = require('http');
-const DoRespond = require('../lib/DoRespond');
+const DoRespond = require('do-respond');
 
 http.createServer((req, res) => {
 
@@ -66,9 +62,6 @@ http.createServer((req, res) => {
     }
 
     // Domain
-    // https://nodejs.org/dist/latest-v6.x/docs/api/domain.html#domain_implicit_binding
-
-    // Implicit Binding Domain
     const protect = domain.create();
 
     protect.add(req);
@@ -78,20 +71,14 @@ http.createServer((req, res) => {
         lastError(err);
     });
 
-    const callbackProtect = domain.create();
-
-    callbackProtect.on('error', (err) => {
-        lastError(err);
-    });
-
     protect.run(() => {
         const doRespond = new DoRespond(req, res, debug);
 
         // Explicit Binding Domain
-        doRespond.json(200, { hello: 'world' }, callbackProtect.bind((err) => {
+        doRespond.json(200, { hello: 'world' }, (err) => {
             // protect error event emit
 
-        }));
+        });
     });
 }).listen(8080);
 ```
@@ -116,7 +103,6 @@ const doRespond = new DoRespond(req, res, require('debug') || console.log);
 - done: function (optional)
 
 ```javascript
-doRespond.text(200, 'hello world');
 doRespond.text(200, 'hello world', (err) => {
     // res finished.
 });
@@ -129,7 +115,6 @@ doRespond.text(200, 'hello world', (err) => {
 - done: function (optional)
 
 ```javascript
-doRespond.xml(200, { hello: 'world' });
 doRespond.xml(200, { hello: 'world' }, (err) => {
     // res finished.
 });
@@ -144,7 +129,6 @@ response content-type: application/json
 - done: function (optional)
 
 ```javascript
-doRespond.json(200, { hello: 'world' });
 doRespond.json(200, { hello: 'world' }, (err) => {
     // res finished.
 });
@@ -159,7 +143,6 @@ response content-type: text/html
 - done: function (optional)
 
 ```javascript
-doRespond.textJson(200, { hello: 'world' });
 doRespond.textJson(200, { hello: 'world' }, (err) => {
     // res finished.
 });
@@ -173,10 +156,6 @@ doRespond.textJson(200, { hello: 'world' }, (err) => {
 - done: function (optional)
 
 ```javascript
-doRespond.respond(200, {
-    'Content-Type': 'application/json; charset=utf-8',
-    'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' })
-}, JSON.stringify({ hello: 'world' }));
 doRespond.respond(200, {
     'Content-Type': 'application/json; charset=utf-8',
     'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' })

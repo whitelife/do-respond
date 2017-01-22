@@ -1,4 +1,3 @@
-
 'use strict';
 
 const debug = require('debug')('test');
@@ -20,9 +19,6 @@ http.createServer((req, res) => {
     }
 
     // Domain
-    // https://nodejs.org/dist/latest-v6.x/docs/api/domain.html#domain_implicit_binding
-
-    // Implicit Binding Domain
     const protect = domain.create();
 
     protect.add(req);
@@ -32,20 +28,15 @@ http.createServer((req, res) => {
         lastError(err);
     });
 
-    const callbackProtect = domain.create();
-
-    callbackProtect.on('error', (err) => {
-        lastError(err);
-    });
-
     protect.run(() => {
         const doRespond = new DoRespond(req, res, debug);
 
         // Explicit Binding Domain
-        // If you want to nest Domain objects as children of a parent Domain, then you must explicitly add them.
-        doRespond.json(200, { hello: 'world' }, callbackProtect.bind((err) => {
+        doRespond.json(200, { hello: 'world' }, (err) => {
             // protect error event emit
 
-        }));
+            throw new Error('1234');
+
+        });
     });
 }).listen(8080);
