@@ -3,6 +3,7 @@
 
 [![Build Status via Travis CI](https://travis-ci.org/whitelife/do-respond.svg?branch=master)](https://travis-ci.org/whitelife/do-respond)
 [![NPM version](https://img.shields.io/npm/v/do-respond.svg)](https://www.npmjs.org/package/do-respond)
+[![Coverage Status](https://coveralls.io/repos/github/whitelife/do-respond/badge.svg?branch=master)](https://coveralls.io/github/whitelife/do-respond?branch=master)
 [![Code Climate](https://codeclimate.com/github/whitelife/do-respond/badges/gpa.svg)](https://codeclimate.com/github/whitelife/do-respond)
 
 do respond library
@@ -11,17 +12,6 @@ do respond library
 
 ```
 npm install do-respond
-```
-
-## Test Coverage
-
-```
-=============================== Coverage summary ===============================
-Statements   : 73.17% ( 60/82 )
-Branches     : 53.85% ( 14/26 )
-Functions    : 100% ( 7/7 )
-Lines        : 73.17% ( 60/82 )
-================================================================================
 ```
 
 ## Quick Start

@@ -29,6 +29,12 @@ describe('DoRespond Testing', () => {
 
                 const doRespond = new DoRespond(req, res, debug);
                 const beheviors = {
+                    '/testerror': () => {
+                        const _doRespond = new DoRespond(req, res);
+                        _doRespond.text(200, 'hello world', (err) => {
+                            throw new Error('test error');
+                        });
+                    },
                     '/testdebug': () => {
                         const _doRespond = new DoRespond(req, res);
                         _doRespond.text(200, 'hello world');
@@ -99,6 +105,14 @@ describe('DoRespond Testing', () => {
 
                         });
                     },
+                    '/changexmlroot': () => {
+                        const _doRespond = new DoRespond(req, res, debug, {
+                            xmlBuilder: {
+                                rootName: 'test'
+                            }
+                        });
+                        _doRespond.xml(200, { hello: 'world' });
+                    }
                 }
 
                 beheviors[req.url](req, res);
@@ -143,6 +157,21 @@ describe('DoRespond Testing', () => {
     it('#text(code, body, done)', (done) => {
         request
             .get('http://localhost:30000/textdone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('hello world');
+                done();
+            });
+    });
+
+    it('#text(code, body, done):testerror', (done) => {
+        request
+            .get('http://localhost:30000/testerror')
             .end((err, res) => {
 
                 if (err) {
@@ -200,6 +229,32 @@ describe('DoRespond Testing', () => {
                 res.on('end', () => {
                     chunks = String(chunks);
                     chunks.should.deepEqual('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hello>world</hello>');
+                    done();
+                });
+            });
+    });
+
+    it('#xml(code, body, done):changexmlroot', (done) => {
+        request
+            .get('http://localhost:30000/changexmlroot')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+
+                let chunks = '';
+
+                res.on('data', (chunk) => {
+                    chunks += chunk;
+                });
+
+                res.on('end', () => {
+                    chunks = String(chunks);
+
+                    chunks.should.deepEqual('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<test>\n  <hello>world</hello>\n</test>');
                     done();
                 });
             });
