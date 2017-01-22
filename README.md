@@ -5,8 +5,6 @@
 [![NPM version](https://img.shields.io/npm/v/do-respond.svg)](https://www.npmjs.org/package/do-respond)
 [![Code Climate](https://codeclimate.com/github/whitelife/do-respond/badges/gpa.svg)](https://codeclimate.com/github/whitelife/do-respond)
 
-https://travis-ci.org/whitelife/do-respond
-
 do respond library
 
 ## Installation
