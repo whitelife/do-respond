@@ -90,9 +90,43 @@ describe('DoRespond Testing', () => {
                             doRespond.json(200, { hello: 'world' });
                         });
                     },
-                    '/overlappeddone': () => {
+                    '/overlappedtextdone': () => {
+                        doRespond.text(200, 'hello world', (err) => {
+                            doRespond.text(200, 'hello world', (err) => {
+
+                            });
+                        });
+                    },
+                    '/overlappedxmldone': () => {
+                        doRespond.xml(200, { hello: 'world' }, (err) => {
+                            doRespond.xml(200, { hello: 'world' }, (err) => {
+
+                            });
+                        });
+                    },
+                    '/overlappedjsondone': () => {
                         doRespond.json(200, { hello: 'world' }, (err) => {
                             doRespond.json(200, { hello: 'world' }, (_err) => {
+
+                            });
+                        });
+                    },
+                    '/overlappedtextjsondone': () => {
+                        doRespond.textJson(200, { hello: 'world' }, (err) => {
+                            doRespond.textJson(200, { hello: 'world' }, (_err) => {
+
+                            });
+                        });
+                    },
+                    '/overlappedresponddone': () => {
+                        doRespond.respond(200, {
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                        }, JSON.stringify({ hello: 'world' }), (err) => {
+                            doRespond.respond(200, {
+                                'Content-Type': 'application/json; charset=utf-8',
+                                'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                            }, JSON.stringify({ hello: 'world' }), (err) => {
 
                             });
                         });
@@ -184,6 +218,21 @@ describe('DoRespond Testing', () => {
             });
     });
 
+    it('#text(code, body, done):overlappedtextdone', (done) => {
+        request
+            .get('http://localhost:30000/overlappedtextdone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('hello world');
+                done();
+            });
+    });
+
     it('#xml(code, body)', (done) => {
         request
             .get('http://localhost:30000/xml')
@@ -260,6 +309,31 @@ describe('DoRespond Testing', () => {
             });
     });
 
+    it('#xml(code, body, done):overlappedxmldone', (done) => {
+        request
+            .get('http://localhost:30000/overlappedxmldone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+
+                let chunks = '';
+
+                res.on('data', (chunk) => {
+                    chunks += chunk;
+                });
+
+                res.on('end', () => {
+                    chunks = String(chunks);
+                    chunks.should.deepEqual('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<hello>world</hello>');
+                    done();
+                });
+            });
+    });
+
     it('#json(code, body)', (done) => {
         request
             .get('http://localhost:30000/json')
@@ -305,9 +379,9 @@ describe('DoRespond Testing', () => {
             });
     });
 
-    it('#json(code, body, done):overlappeddone', (done) => {
+    it('#json(code, body, done):overlappedjsondone', (done) => {
         request
-            .get('http://localhost:30000/overlappeddone')
+            .get('http://localhost:30000/overlappedjsondone')
             .end((err, res) => {
 
                 if (err) {
@@ -365,6 +439,21 @@ describe('DoRespond Testing', () => {
             });
     });
 
+    it('#textJson(code, body, done):overlappedtextjsondone', (done) => {
+        request
+            .get('http://localhost:30000/overlappedtextjsondone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('{"hello":"world"}');
+                done();
+            });
+    });
+
     it('#respond(code, body)', (done) => {
         request
             .get('http://localhost:30000/respond')
@@ -383,6 +472,21 @@ describe('DoRespond Testing', () => {
     it('#respond(code, body, done)', (done) => {
         request
             .get('http://localhost:30000/responddone')
+            .end((err, res) => {
+
+                if (err) {
+                    return done(err);
+                }
+
+                res.should.have.property('statusCode', 200);
+                res.text.should.deepEqual('{"hello":"world"}');
+                done();
+            });
+    });
+
+    it('#respond(code, body, done):overlappedresponddone', (done) => {
+        request
+            .get('http://localhost:30000/overlappedresponddone')
             .end((err, res) => {
 
                 if (err) {
