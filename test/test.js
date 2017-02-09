@@ -11,153 +11,159 @@ const should = require('should');
 const request = require('superagent');
 let server = null;
 
-describe('DoRespond Testing', () => {
+before((done) => {
+    server = http.createServer((req, res) => {
 
-    before((done) => {
-        server = http.createServer((req, res) => {
+        const protect = domain.create();
+        protect.add(req);
+        protect.add(res);
 
-            const protect = domain.create();
-            protect.add(req);
-            protect.add(res);
-
-            protect.on('error', (err) => {
-                res.end();
-            });
-
-            protect.run(() => {
-                debug(`req.url: ${req.url}`);
-
-                const doRespond = new DoRespond(req, res, debug);
-                const beheviors = {
-                    '/testerror': () => {
-                        const _doRespond = new DoRespond(req, res);
-                        _doRespond.text(200, 'hello world', (err) => {
-                            throw new Error('test error');
-                        });
-                    },
-                    '/testdebug': () => {
-                        const _doRespond = new DoRespond(req, res);
-                        _doRespond.text(200, 'hello world');
-                    },
-                    '/text': () => {
-                        doRespond.text(200, 'hello world');
-                    },
-                    '/textdone': () => {
-                        doRespond.text(200, 'hello world', (err) => {
-
-                        });
-                    },
-                    '/xml': () => {
-                        doRespond.xml(200, { hello: 'world' });
-                    },
-                    '/xmldone': () => {
-                        doRespond.xml(200, { hello: 'world' }, (err) => {
-
-                        });
-                    },
-                    '/json': () => {
-                        doRespond.json(200, { hello: 'world' });
-                    },
-                    '/jsondone': () => {
-                        doRespond.json(200, { hello: 'world' }, (err) => {
-
-                        });
-                    },
-                    '/textJson': () => {
-                        doRespond.textJson(200, { hello: 'world' });
-                    },
-                    '/textJsondone': () => {
-                        doRespond.textJson(200, { hello: 'world' }, (err) => {
-
-                        });
-                    },
-                    '/respond': () => {
-                        doRespond.respond(200, {
-                            'Content-Type': 'application/json; charset=utf-8',
-                            'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
-                        }, JSON.stringify({ hello: 'world' }));
-                    },
-                    '/responddone': () => {
-                        doRespond.respond(200, {
-                            'Content-Type': 'application/json; charset=utf-8',
-                            'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
-                        }, JSON.stringify({ hello: 'world' }), (err) => {
-
-                        });
-                    },
-                    '/overlapped': () => {
-                        doRespond.json(200, { hello: 'world' }, (err) => {
-                            doRespond.json(200, { hello: 'world' });
-                        });
-                    },
-                    '/overlappedtextdone': () => {
-                        doRespond.text(200, 'hello world', (err) => {
-                            doRespond.text(200, 'hello world', (err) => {
-
-                            });
-                        });
-                    },
-                    '/overlappedxmldone': () => {
-                        doRespond.xml(200, { hello: 'world' }, (err) => {
-                            doRespond.xml(200, { hello: 'world' }, (err) => {
-
-                            });
-                        });
-                    },
-                    '/overlappedjsondone': () => {
-                        doRespond.json(200, { hello: 'world' }, (err) => {
-                            doRespond.json(200, { hello: 'world' }, (_err) => {
-
-                            });
-                        });
-                    },
-                    '/overlappedtextjsondone': () => {
-                        doRespond.textJson(200, { hello: 'world' }, (err) => {
-                            doRespond.textJson(200, { hello: 'world' }, (_err) => {
-
-                            });
-                        });
-                    },
-                    '/overlappedresponddone': () => {
-                        doRespond.respond(200, {
-                            'Content-Type': 'application/json; charset=utf-8',
-                            'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
-                        }, JSON.stringify({ hello: 'world' }), (err) => {
-                            doRespond.respond(200, {
-                                'Content-Type': 'application/json; charset=utf-8',
-                                'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
-                            }, JSON.stringify({ hello: 'world' }), (err) => {
-
-                            });
-                        });
-                    },
-                    '/headerssent': () => {
-                        res.writeHead(200, { 'Content-Type': 'text/plain',
-                          'Trailer': 'Content-MD5' });
-
-                        doRespond.json(200, { hello: 'world' }, (err) => {
-
-                        });
-                    },
-                    '/changexmlroot': () => {
-                        const _doRespond = new DoRespond(req, res, debug, {
-                            xmlBuilder: {
-                                rootName: 'test'
-                            }
-                        });
-                        _doRespond.xml(200, { hello: 'world' });
-                    }
-                }
-
-                beheviors[req.url](req, res);
-            });
+        protect.on('error', (err) => {
+            debug('test error: ' + err.stack);
+            res.end();
         });
-        server.listen(30000, '0.0.0.0', () => {
-            debug('server listen');
-            done();
+
+        protect.run(() => {
+            debug(`req.url: ${req.url}`);
+
+            const doRespond = new DoRespond(req, res, debug);
+            const beheviors = {
+                '/testerror': () => {
+                    const _doRespond = new DoRespond(req, res);
+                    _doRespond.text(200, 'hello world', (err) => {
+                        throw new Error('test error');
+                    });
+                },
+                '/testdebug': () => {
+                    const _doRespond = new DoRespond(req, res);
+                    _doRespond.text(200, 'hello world');
+                },
+                '/text': () => {
+                    doRespond.text(200, 'hello world');
+                },
+                '/textdone': () => {
+                    doRespond.text(200, 'hello world', (err) => {
+
+                    });
+                },
+                '/xml': () => {
+                    doRespond.xml(200, { hello: 'world' });
+                },
+                '/xmldone': () => {
+                    doRespond.xml(200, { hello: 'world' }, (err) => {
+
+                    });
+                },
+                '/json': () => {
+                    doRespond.json(200, { hello: 'world' });
+                },
+                '/jsondone': () => {
+                    doRespond.json(200, { hello: 'world' }, (err) => {
+
+                    });
+                },
+                '/textJson': () => {
+                    doRespond.textJson(200, { hello: 'world' });
+                },
+                '/textJsondone': () => {
+                    doRespond.textJson(200, { hello: 'world' }, (err) => {
+
+                    });
+                },
+                '/respond': () => {
+                    doRespond.respond(200, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                    }, JSON.stringify({ hello: 'world' }));
+                },
+                '/responddone': () => {
+                    doRespond.respond(200, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                    }, JSON.stringify({ hello: 'world' }), (err) => {
+
+                    });
+                },
+                '/overlapped': () => {
+                    doRespond.json(200, { hello: 'world' }, (err) => {
+                        doRespond.json(200, { hello: 'world' });
+                    });
+                },
+                '/overlappedtextdone': () => {
+                    doRespond.text(200, 'hello world', (err) => {
+                        doRespond.text(200, 'hello world', (err) => {
+
+                        });
+                    });
+                },
+                '/overlappedxmldone': () => {
+                    doRespond.xml(200, { hello: 'world' }, (err) => {
+                        doRespond.xml(200, { hello: 'world' }, (err) => {
+
+                        });
+                    });
+                },
+                '/overlappedjsondone': () => {
+                    doRespond.json(200, { hello: 'world' }, (err) => {
+                        doRespond.json(200, { hello: 'world' }, (_err) => {
+
+                        });
+                    });
+                },
+                '/overlappedtextjsondone': () => {
+                    doRespond.textJson(200, { hello: 'world' }, (err) => {
+                        doRespond.textJson(200, { hello: 'world' }, (_err) => {
+
+                        });
+                    });
+                },
+                '/overlappedresponddone': () => {
+                    doRespond.respond(200, {
+                        'Content-Type': 'application/json; charset=utf-8',
+                        'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                    }, JSON.stringify({ hello: 'world' }), (err) => {
+                        doRespond.respond(200, {
+                            'Content-Type': 'application/json; charset=utf-8',
+                            'Content-Length': Buffer.byteLength(JSON.stringify({ hello: 'world' }))
+                        }, JSON.stringify({ hello: 'world' }), (err) => {
+
+                        });
+                    });
+                },
+                '/headerssent': () => {
+                    res.writeHead(200, { 'Content-Type': 'text/plain',
+                      'Trailer': 'Content-MD5' });
+
+                    doRespond.json(200, { hello: 'world' }, (err) => {
+
+                    });
+                },
+                '/changexmlroot': () => {
+                    const _doRespond = new DoRespond(req, res, debug, {
+                        xmlBuilder: {
+                            rootName: 'test'
+                        }
+                    });
+                    _doRespond.xml(200, { hello: 'world' });
+                }
+            }
+
+            beheviors[req.url](req, res);
         });
     });
+    server.listen(30000, '0.0.0.0', () => {
+        debug('server listen');
+        done();
+    });
+});
 
+after((done) => {
+    server.close(() => {
+        done();
+    });
+});
+
+describe('DoRespond Testing', () => {
     it('#constructor(req, res, log, options)', (done) => {
         request
             .get('http://localhost:30000/testdebug')
@@ -497,11 +503,5 @@ describe('DoRespond Testing', () => {
                 res.text.should.deepEqual('{"hello":"world"}');
                 done();
             });
-    });
-
-    after((done) => {
-        server.close(() => {
-            done();
-        });
     });
 });

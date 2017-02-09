@@ -32,10 +32,8 @@ http.createServer((req, res) => {
         const doRespond = new DoRespond(req, res, debug);
 
         // Explicit Binding Domain
-        doRespond.json(200, { hello: 'world' }, (err) => {
+        doRespond.xml(200, { hello: 'world' }, (err) => {
             // protect error event emit
-
-            throw new Error('1234');
 
         });
     });
